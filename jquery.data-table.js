@@ -539,7 +539,6 @@
 
     // loop through the columns
     for(column in o.columns) {
-      // var $item = $('<div class="control-group"><label class="control-label">' + o.columns[column].title + '</label><div class="controls"><label class="checkbox"><a href="#"><i class="icon-' + (o.columns[column].hidden ? "remove" : "ok") + '"></i></a></label></div></div>')
       var $item = $('<div class="control-group" style="float: left" data-column="' + column + '"><label class="control-label">' + o.columns[column].title + '</label><div class="controls"><div class="btn-group" data-toggle="buttons-radio"><a href="#" class="btn ' + (o.columns[column].hidden ? "" : "active") + '"><i class="icon-ok"></i></a><a href="#" class="btn ' + (o.columns[column].hidden ? "active" : "") + '"><i class="icon-remove"></i></a></div></div></div>')
         .click(function() {
           _toggleColumn.call(this, that)
