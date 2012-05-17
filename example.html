@@ -1,0 +1,65 @@
+<html>
+<head>
+
+<link href="css/bootstrap.css" rel="stylesheet">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="jquery.data-table.js"></script>
+</head>
+
+<body>
+<div id="example" class="container">
+
+<header class="jumbotron subhead" id="overview">
+  <h1>Data Table Example</h1>
+  <p class="lead">Basic example of the new AJAX powered data table for iAcquire.</p>
+</header>
+
+<div class="row">
+    <div id="table-container" class="span12">
+    </div>
+  </div>
+
+
+<script>
+
+$("#table-container").datatable({
+    perPage: 10
+  , showPagination: true
+  , showFilter: true
+	,	columns: [
+				{
+						title: "Column 1"
+					, sortable: true
+					, field: "column_0"
+          , callback: function ( data, cell ) {
+              return data[cell.field];
+            }
+          , filter: true
+				}
+			, {
+						title: "Column 2"
+					, sortable: true
+					, field: "column_1"
+				}
+			, {
+						title: "Column 3"
+					, sortable: false
+					, field: "column_2"
+          , filter: true
+				}
+			, {
+						title: "Column 4"
+					, sortable: false
+					, field: "column_3"
+          , hidden: true
+				}
+		]
+});
+
+</script>
+
+</div>
+</body>
+</html>
