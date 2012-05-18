@@ -12,7 +12,7 @@ Look at the example.html file to see it in action. But the basic premise is this
 
 ```
 $("#my-dt-container").datatable({
-		url: "datat.php"
+		url: "data.php"
 	,	columns: [
 			{
 					title: "The heading of your column"
