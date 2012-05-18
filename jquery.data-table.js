@@ -520,7 +520,7 @@
 
     // render the display modal button
     $toggle
-      .addClass("btn pull-left")
+      .addClass("btn btn-large pull-left")
       .data("toggle", "modal")
       .attr("href", "#dt-column-modal")
       .html("<i class=\"icon-cog\"></i>")
