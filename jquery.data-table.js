@@ -465,17 +465,17 @@
       , $bottom_details = this.$bottom_details
       , $toggle = $("<a></a>")
 
+    // localize the object
+    var that = this;
+
     if(!this.$modal) {
       this.$modal = $('<div></div>')
         .attr("id", "dt-column-modal") // TODO: need to adjust to allow multiple tables on a page
         .addClass("modal")
         .hide()
 
-      // localize the object
-      var that = this;
-
       // render the modal header
-      var $header = $("<div></div>")
+      this.$modalheader = $("<div></div>")
         .addClass("modal-header")
         .append(
           $("<button></button>")
@@ -492,43 +492,47 @@
         )
 
       // render the modal footer
-      var $footer = $("<div></div>")
+      this.$modalfooter = $("<div></div>")
         .addClass("modal-footer")
         .append(
           $("<a></a>")
             .attr("href", "#")
             .addClass("btn btn-primary")
             .text("Save")
+            .click(function(){
+              saveColumns.call(that)
+            })
         )
 
       // render the modal body
-      var $body = $("<div></div>")
+      this.$modalbody = $("<div></div>")
         .addClass("modal-body")
-
-      // render the display modal button
-      $toggle
-        .addClass("btn pull-left")
-        .data("toggle", "modal")
-        .attr("href", "#dt-column-modal")
-        .html("<i class=\"icon-cog\"></i>")
-        .click(function(){
-          that.$modal
-            .on('show', function () {
-              _updateColumnModalBody.call(that, $body)
-            })
-            .modal();
-        })
-      $bottom_details.prepend($toggle);
 
       // render and add the modal to the container
       this.$modal
         .append(
-            $header
-          , $body
-          , $footer
+            this.$modalheader
+          , this.$modalbody
+          , this.$modalfooter
         )
         .appendTo(document.body);
     }
+
+    // render the display modal button
+    $toggle
+      .addClass("btn pull-left")
+      .data("toggle", "modal")
+      .attr("href", "#dt-column-modal")
+      .html("<i class=\"icon-cog\"></i>")
+      .click(function(){
+        that.$modal
+          .on('show', function () {
+            _updateColumnModalBody.call(that, that.$modalbody)
+          })
+          .modal();
+      })
+    $bottom_details.prepend($toggle);
+
     return this.$modal;
   }
 
@@ -573,6 +577,33 @@
     o.columns[column].hidden ? 
       $(this).find(".icon-remove").parent().addClass("active") :
       $(this).find(".icon-ok").parent().addClass("active")
+  }
+
+  function saveColumns() {
+    var o = this.options
+      , columns = []
+
+    // save the columns to the localstorage
+    if(localStorage) {
+      localStorage["datatable_" + o.url.replace(/\W/ig, '_')] = o.columns
+    }
+
+    $.ajax({
+        url: o.url
+      , type: "POST"
+      , dataType: "json"
+      , data: {
+            action: "saveColumns"
+          , columns: JSON.stringify(o.columns)
+          , sort: JSON.stringify(o.sort)
+          , filter: JSON.stringify(o.filter)
+        }
+      , success: function( res ) {
+          console.log("columns saved")
+        }
+    })
+
+    this.$modal.modal("hide")
   }
 
 
