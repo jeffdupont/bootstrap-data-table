@@ -228,7 +228,7 @@
         // loop through the columns
         for(column in o.columns) {
           var $cell = $("<td></td>")
-            .addClass("dt-column_" + column)
+            .addClass(o.columns[column].classname)
 
           if(o.columns[column].hidden) $cell.hide();
 
@@ -279,7 +279,7 @@
 
         $cell
           .data("cell_properties", o.columns[column])
-          .addClass("dt-column_" + column)
+          .addClass(o.columns[column].classname)
           .html(celldata || "&nbsp;")
 
         if(o.columns[column].hidden) $cell.hide();
@@ -290,10 +290,13 @@
     , column: function ( column ) {
         var $cell = $('<th></th>')
           , o = this.options
+          , classname = "dt-column_" + column + Math.floor((Math.random()*1000)+1)
+
+        o.columns[column].classname = classname
 
         $cell
           .data("column_properties", o.columns[column])
-          .addClass("dt-column_" + column)
+          .addClass(classname)
           .text(o.columns[column].title)
 
         if(o.columns[column].hidden) $cell.hide();
@@ -470,7 +473,7 @@
 
     if(!this.$modal) {
       this.$modal = $('<div></div>')
-        .attr("id", "dt-column-modal") // TODO: need to adjust to allow multiple tables on a page
+        .attr("id", "dt-column-modal_" + Math.floor((Math.random()*100)+1))
         .addClass("modal")
         .hide()
 
@@ -522,7 +525,7 @@
     $toggle
       .addClass("btn btn-large pull-left")
       .data("toggle", "modal")
-      .attr("href", "#dt-column-modal")
+      .attr("href", "#" + this.$modal.attr("id"))
       .html("<i class=\"icon-cog\"></i>")
       .click(function(){
         that.$modal
@@ -562,7 +565,7 @@
   function _toggleColumn(that) {
     var o = that.options
       , column = $(this).data("column")
-      , $column = $(".dt-column_" + column)
+      , $column = $("." + o.columns[column].classname)
 
     if($column.is(":visible")) {
       $column.hide()
@@ -573,7 +576,10 @@
       o.columns[column].hidden = false;
     }
 
-    $(this).find(".active").removeClass("active")
+    $(this)
+      .find("a.active")
+      .removeClass("active")        
+
     o.columns[column].hidden ? 
       $(this).find(".icon-remove").parent().addClass("active") :
       $(this).find(".icon-ok").parent().addClass("active")
@@ -585,7 +591,7 @@
 
     // save the columns to the localstorage
     if(localStorage) {
-      localStorage["datatable_" + o.url.replace(/\W/ig, '_')] = o.columns
+      localStorage["datatable_" + (o.id || o.url.replace(/\W/ig, '_'))] = o.columns
     }
 
     $.ajax({
@@ -656,6 +662,7 @@
 
   $.fn.datatable.defaults = {
     debug: false
+  , id: undefined
   , perPage: 10
   , pagePadding: 2
   , sort: [[]]
