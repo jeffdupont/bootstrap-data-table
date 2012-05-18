@@ -10,6 +10,7 @@ How to use it
 
 Look at the example.html file to see it in action. But the basic premise is this:
 
+```
 $("#my-dt-container").datatable({
 		url: "datat.php"
 	,	columns: [
@@ -19,6 +20,7 @@ $("#my-dt-container").datatable({
 			}
 		]
 })
+```
 
 It's recommended to utilize the ID attribute of the container so the datatable can easily operate multiple instances on a single page. Each time the table is rendered/updated the plugin will clear out the current children in the container and redraw the table. 
 
