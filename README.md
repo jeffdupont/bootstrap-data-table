@@ -1,6 +1,8 @@
 jquery-data-table
 =================
 
+@@version 1.0
+
 This is a very lightweight datatable plugin for bootstrap. The plugin uses AJAX as its exclusive means for retrieving data. It's designed to be used with backend API calls communicating via JSON. I may work on additional features that will allow you to pass in the data separately, but it's already pretty powerful without it. 
 
 
