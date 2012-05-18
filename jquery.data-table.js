@@ -605,7 +605,7 @@
           , filter: JSON.stringify(o.filter)
         }
       , success: function( res ) {
-          console.log("columns saved")
+          if(o.debug) console.log("columns saved")
         }
     })
 
