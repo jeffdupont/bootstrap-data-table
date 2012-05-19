@@ -1,7 +1,7 @@
 jquery-data-table
 =================
 
-@@version 1.0
+@@version 1.1
 
 This is a very lightweight datatable plugin for bootstrap. The plugin uses AJAX as its exclusive means for retrieving data. It's designed to be used with backend API calls communicating via JSON. I may work on additional features that will allow you to pass in the data separately, but it's already pretty powerful without it. 
 
@@ -91,6 +91,8 @@ DataTable Options
 
 + **rowCallback**: undefined
 [Optional] This is a callback function when a row is completed with rendering allowing you to further manipulate the display. It will pass the current row object as the only parameter to the function.
+
+
 
 
 Column Options
