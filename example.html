@@ -31,42 +31,44 @@
 
 $("#table-container_1").datatable({
     perPage: 5
+  , url: 'data.php'
   , showPagination: true
   , showFilter: true
-	,	columns: [
-				{
-						title: "Column 1"
-					, sortable: true
-					, field: "column_0"
+  , columns: [
+        {
+            title: "Column 1"
+          , sortable: true
+          , field: "column_0"
           , callback: function ( data, cell ) {
               return data[cell.field];
             }
           , filter: true
-				}
-			, {
-						title: "Column 2"
-					, sortable: true
-					, field: "column_1"
-				}
-			, {
-						title: "Column 3"
-					, sortable: false
-					, field: "column_2"
+        }
+      , {
+            title: "Column 2"
+          , sortable: true
+          , field: "column_1"
+        }
+      , {
+            title: "Column 3"
+          , sortable: false
+          , field: "column_2"
           , filter: true
-				}
-			, {
-						title: "Column 4"
-					, sortable: false
-					, field: "column_3"
+        }
+      , {
+            title: "Column 4"
+          , sortable: false
+          , field: "column_3"
           , hidden: true
-				}
-		]
+        }
+    ]
 });
 
 
 
 $("#table-container_2").datatable({
     perPage: 5
+  , url: 'data.php'
   , showPagination: true
   , showFilter: true
   , columns: [

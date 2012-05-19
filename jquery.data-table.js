@@ -1,5 +1,5 @@
 /*!
- * jQuery Data Table Plugin v1.0
+ * jQuery Data Table Plugin v1.1
  *
  * Author: Jeff Dupont
  * ==========================================================
@@ -33,7 +33,7 @@
     // set the defaults for the column options array
     for(column in this.options.columns) {
       // check sortable
-      if(typeof(this.options.columns[column].sortable) === undefined) 
+      if(typeof this.options.columns[column].sortable === undefined) 
         this.options.columns[column].sortable = true;
     }
 
@@ -53,6 +53,9 @@
     , render: function () {
         var o = this.options
           , $e = this.$element
+
+        // show loading
+        this.loading( true )
 
         // reset the columns and rows
         this.columns = []
@@ -102,6 +105,7 @@
                 // set the sort and filter configuration
                 o.sort = res.sort
                 o.filter = res.filter
+                o.totalRows = res.totalRows
 
                 // set the current page if we're forcing it from the server
                 if(res.currentPage) o.currentPage = parseInt(res.currentPage);
@@ -128,13 +132,134 @@
 
                 // handle the column management
                 if(o.toggleColumns)   initModal.call(that);
+
+                // update the details for the results
+                that.details();
+
+                that.loading( false )
               }
             , error: function( e ) {
                 if(o.debug) console.log(e);
                 showError.call(that);
+
+                that.loading( false )
               }
           })     
         }
+      }
+
+    , loading: function ( show ) {
+        var $e = this.$element
+
+        if(!this.$loading) {
+          this.$loading = $("<div></div>")
+            .css({
+                position: 'absolute'
+              , top: parseInt($e.position().top) + Math.floor($e.height() / 2)
+              , left: parseInt($e.position().left) + parseInt($e.css("marginLeft")) + Math.floor($e.width() / 4)
+              , width: Math.floor($e.width() / 2) + "px"
+            })
+            .append(
+              $("<div></div>")
+                .addClass("progress progress-striped active")
+                .append($('<div class="bar" style="width: 100%"></div>'))
+            )
+            .appendTo(document.body)
+        }
+
+        if(show) {
+          $e.css({ opacity: 0.2 })
+        }
+        else {
+          $e.css({ opacity: 1 })
+
+          this.$loading.remove()
+          this.$loading = undefined
+        }
+      }
+
+    , details: function () {
+        var o = this.options
+          , res = this.resultset
+          , start = 0
+          , end = 0
+          , that = this
+
+        // create the div to hold the info
+        this.$details = $("<div></div>")
+          // .addClass("")
+          .appendTo(this.$top_details)
+
+        start = (o.currentPage * o.perPage) - o.perPage + 1
+        end = (o.currentPage * o.perPage)
+        if(end > o.totalRows) end = o.totalRows
+
+        this.$details.append(
+          '<blockquote class="pull-right"><p>Showing ' + start + ' to ' + end + ' of ' + o.totalRows + ' rows</p></blockquote>'
+        )
+
+        // per page options and current filter/sorting
+        var $perpage_select = $("<select></select>")
+          .addClass("span1")
+          .css({ marginBottom: '0' })
+          .append(
+              '<option value="5">5</option>'
+            , '<option value="10">10</option>'
+            , '<option value="20">20</option>'
+            , '<option value="50">50</option>'
+            , '<option value="100">100</option>'
+          )
+          .val(o.perPage)
+          .change(function(){
+            // update the perpage value
+            o.perPage = $(this).val();
+
+            // the offset
+            var offset = o.currentPage * o.perPage
+            while(offset > o.totalRows) {
+              o.currentPage--;
+              offset = o.currentPage * o.perPage
+            }
+
+            if($(this).popover) $(this).popover('hide')
+
+            // update the table
+            that.render();
+          })
+
+        var $page_sort = []
+          , $page_filter = []
+
+        // sort
+        $.each(o.sort, function(i, v){
+          var heading
+          for(column in o.columns) {
+            if(o.columns[column].field == v[0]) heading = o.columns[column].title;
+          }
+          $page_sort.push( heading + " " + v[1].toUpperCase() )
+        })
+
+        // filter
+        $.each(o.filter, function(k, v) {
+          var heading
+          for(column in o.columns) {
+            if(o.columns[column].field == k) heading = o.columns[column].title;
+          }
+          $page_filter.push( heading + " = '" + v + "'" )
+        })
+
+        this.$details.append(
+            $('<blockquote></blockquote>').append($perpage_select)
+          , ''
+        )
+
+        $($perpage_select).popover({
+            placement: "bottom"
+          , content: $('<dl></dl>').append(
+                $page_sort.length > 0 ? '<dt><i class="icon-th-list"></i> Sort:</dt><dd>' + $page_sort.join(", ") + '</dd>' : ''
+              , o.showFilter && $page_filter.length > 0 ? '<dt><i class="icon-filter"></i> Filter:</dt><dd>' + $page_filter.join(", ") + '</dd>' : ''
+            )
+        })
       }
 
     , table: function () {
@@ -262,7 +387,7 @@
         }
 
         // callback for postprocessing on the row
-        if(o.rowCallback && typeof(o.rowCallback) === "function") 
+        if(o.rowCallback && typeof o.rowCallback === "function") 
           $row = o.rowCallback( $row );
 
         return $row;
@@ -274,7 +399,7 @@
           , o = this.options
 
         // preprocess on the cell data for a column
-        if(o.columns[column].callback && typeof(o.columns[column].callback) === "function") 
+        if(o.columns[column].callback && typeof o.columns[column].callback === "function") 
           celldata = o.columns[column].callback( data, o.columns[column] )
 
         $cell
@@ -306,7 +431,7 @@
 
     , sort: function ( e ) {
         var colprop = $(this).data("column_properties")
-          , $d = e.data
+          , that = e.data
           , o = e.data.options
           , found = false
 
@@ -322,12 +447,12 @@
         }
         if(!found) o.sort.push([colprop.field, colprop.sortOrder])
 
-        $d.render();
+        that.render();
       }
 
     , pagination: function () {
         var $e = this.$element
-          , $d = this
+          , that = this
           , o = this.options
           , res = this.resultset
 
@@ -347,10 +472,10 @@
                 $("<a></a>")
                   .attr("href", "#")
                   .data("page", 1)
-                  .text("First")
+                  .html("&larr; First")
                   .click(function() {
                     o.currentPage = 1
-                    $d.render();
+                    that.render();
                   })
               )
             , $previous = $("<li></li>").append(
@@ -360,7 +485,7 @@
                   .text("Prev")
                   .click(function() {
                     o.currentPage -= 1
-                    $d.render();
+                    that.render();
                   })
               )
             , $next = $("<li></li>").append(
@@ -370,17 +495,17 @@
                   .text("Next")
                   .click(function() {
                     o.currentPage += 1
-                    $d.render();
+                    that.render();
                   })
               )
             , $last = $("<li></li>").append(
                 $("<a></a>")
                   .attr("href", "#")
                   .data("page", o.pageCount)
-                  .text("Last")
+                  .html("Last &rarr;")
                   .click(function() {
                     o.currentPage = o.pageCount
-                    $d.render();
+                    that.render();
                   })
               )
 
@@ -414,7 +539,7 @@
                   .text(i)
                   .click(function() {
                     o.currentPage = $(this).data('page')
-                    $d.render();
+                    that.render();
                   })
               )
 
@@ -676,7 +801,7 @@
   , showFilter: false
   , allowExport: false
   , toggleColumns: true
-  , url: 'data.php'
+  , url: ''
   , columns: []
   , ascending: '<i class="icon-chevron-up"></i>'
   , descending: '<i class="icon-chevron-down"></i>'
