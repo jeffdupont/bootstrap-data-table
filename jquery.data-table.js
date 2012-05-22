@@ -1,5 +1,5 @@
 /*!
- * jQuery Data Table Plugin v1.1
+ * jQuery Data Table Plugin v1.2
  *
  * Author: Jeff Dupont
  * ==========================================================
@@ -29,6 +29,7 @@
     this.enabled = true;
     this.columns = [];
     this.rows = [];
+    this.buttons = [];
 
     // set the defaults for the column options array
     for(column in this.options.columns) {
@@ -60,11 +61,14 @@
         // reset the columns and rows
         this.columns = []
         this.rows    = []
+        this.buttons = []
         this.$table  = undefined
         this.$header = undefined
         this.$body   = undefined
         this.$footer = undefined
         this.$pagination = undefined
+
+        if(this.$toolbar) this.$toolbar.remove();
 
         // top
         this.$top_details = $("<div></div>")
@@ -130,11 +134,23 @@
                 if(o.showPagination && that.pagination())    
                   that.$bottom_details.append(that.pagination().clone(true));
 
-                // handle the column management
-                if(o.toggleColumns)   initModal.call(that);
-
                 // update the details for the results
                 that.details();
+
+                // create the perpage dropdown
+                _initPerPage.call(that);
+
+                // handle filter options
+                if(o.filterModal)     _initFilterModal.call(that);
+
+                // handle the column management
+                if(o.toggleColumns)   _initColumnModal.call(that);
+
+                // initialize the table info
+                _initTableInfo.call(that);
+
+                // create the buttons and section functions
+                that.toolbar();
 
                 that.loading( false )
               }
@@ -178,6 +194,46 @@
         }
       }
 
+    , toolbar: function () {
+        var o = this.options
+          , $e = this.$element
+          , that = this
+
+        this.$toolbar = $("<div></div>")
+          .addClass("dt-toolbar btn-toolbar pull-right")
+
+        this.$button_group = $("<div></div>")
+          .addClass("btn-group")
+          .appendTo(this.$toolbar)
+
+        // add all the custom buttons
+        for(var i = 0; i < o.buttons.length; i++) {
+          this.buttons.push(o.buttons[i]);
+        }
+
+        // attach all buttons to the toolbar
+        $.each(this.buttons, function() {
+          that.$button_group.append(this);
+        })
+
+        // attach the toolbar to the section header
+        if(o.sectionHeader) {
+          this.$section_header = $(o.sectionHeader);
+          this.$section_header.append(this.$toolbar)
+        }
+        else if(o.title != '' && !this.$section_header) {
+          this.$section_header = $("<h2></h2>")
+            .text(o.title)
+            .append(this.$toolbar)
+          $e.before(this.$section_header)
+        }
+        else {
+          this.$section_header.append(this.$toolbar)
+        }
+
+        return this.$toolbar
+      }
+
     , details: function () {
         var o = this.options
           , res = this.resultset
@@ -185,81 +241,12 @@
           , end = 0
           , that = this
 
-        // create the div to hold the info
-        this.$details = $("<div></div>")
-          // .addClass("")
-          .appendTo(this.$top_details)
-
         start = (o.currentPage * o.perPage) - o.perPage + 1
         end = (o.currentPage * o.perPage)
         if(end > o.totalRows) end = o.totalRows
 
-        this.$details.append(
-          '<blockquote class="pull-right"><p>Showing ' + start + ' to ' + end + ' of ' + o.totalRows + ' rows</p></blockquote>'
-        )
-
-        // per page options and current filter/sorting
-        var $perpage_select = $("<select></select>")
-          .addClass("span1")
-          .css({ marginBottom: '0' })
-          .append(
-              '<option value="5">5</option>'
-            , '<option value="10">10</option>'
-            , '<option value="20">20</option>'
-            , '<option value="50">50</option>'
-            , '<option value="100">100</option>'
-          )
-          .val(o.perPage)
-          .change(function(){
-            // update the perpage value
-            o.perPage = $(this).val();
-
-            // the offset
-            var offset = o.currentPage * o.perPage
-            while(offset > o.totalRows) {
-              o.currentPage--;
-              offset = o.currentPage * o.perPage
-            }
-
-            if($(this).popover) $(this).popover('hide')
-
-            // update the table
-            that.render();
-          })
-
-        var $page_sort = []
-          , $page_filter = []
-
-        // sort
-        $.each(o.sort, function(i, v){
-          var heading
-          for(column in o.columns) {
-            if(o.columns[column].field == v[0]) heading = o.columns[column].title;
-          }
-          $page_sort.push( heading + " " + v[1].toUpperCase() )
-        })
-
-        // filter
-        $.each(o.filter, function(k, v) {
-          var heading
-          for(column in o.columns) {
-            if(o.columns[column].field == k) heading = o.columns[column].title;
-          }
-          $page_filter.push( heading + " = '" + v + "'" )
-        })
-
-        this.$details.append(
-            $('<blockquote></blockquote>').append($perpage_select)
-          , ''
-        )
-
-        $($perpage_select).popover({
-            placement: "bottom"
-          , content: $('<dl></dl>').append(
-                $page_sort.length > 0 ? '<dt><i class="icon-th-list"></i> Sort:</dt><dd>' + $page_sort.join(", ") + '</dd>' : ''
-              , o.showFilter && $page_filter.length > 0 ? '<dt><i class="icon-filter"></i> Filter:</dt><dd>' + $page_filter.join(", ") + '</dd>' : ''
-            )
-        })
+        $('<div class="pull-left"><p>Showing ' + start + ' to ' + end + ' of ' + o.totalRows + ' rows</p></div>')
+          .prependTo(this.$bottom_details)
       }
 
     , table: function () {
@@ -335,12 +322,12 @@
             this.rows.push(row);
           }
 
-          if(o.showFilter) this.$body.prepend(this.filter());
+          if(o.showFilterRow) this.$body.prepend(this.filter());
 
           this.table()
             .append(this.$body);
         }
-        return this.$body;
+        return this.$body;Row
       }
 
     , filter: function () {
@@ -571,6 +558,198 @@
  /* DATATABLE PRIVATE METHODS
   * ========================= */
 
+  function _initColumnModal() {
+    var o = this.options
+      , $e = this.$element
+      , $top_details = this.$top_details
+      , $toggle = $("<a></a>")
+
+    // localize the object
+    var that = this;
+
+    if(!this.$column_modal) {
+      this.$column_modal = $('<div></div>')
+        .attr("id", "dt-column-modal_" + Math.floor((Math.random()*100)+1))
+        .addClass("modal")
+        .hide()
+
+      // render the modal header
+      this.$column_modalheader = $("<div></div>")
+        .addClass("modal-header")
+        .append(
+          $("<button></button>")
+            .addClass("close")
+            .data("dismiss", "modal")
+            .text('x')
+            .click(function(){
+              that.$column_modal.modal('hide')
+            })
+        )
+        .append(
+          $("<h3></h3>")
+            .text("Toggle Columns")
+        )
+
+      // render the modal footer
+      this.$column_modalfooter = $("<div></div>")
+        .addClass("modal-footer")
+        .append(
+          $("<a></a>")
+            .attr("href", "#")
+            .addClass("btn btn-primary")
+            .text("Save")
+            .click(function(){
+              saveColumns.call(that)
+            })
+        )
+
+      // render the modal body
+      this.$column_modalbody = $("<div></div>")
+        .addClass("modal-body")
+
+      // render and add the modal to the container
+      this.$column_modal
+        .append(
+            this.$column_modalheader
+          , this.$column_modalbody
+          , this.$column_modalfooter
+        )
+        .appendTo(document.body);
+    }
+
+    // render the display modal button
+    $toggle
+      .addClass("btn")
+      .data("toggle", "modal")
+      .attr("href", "#" + this.$column_modal.attr("id"))
+      .html("<i class=\"icon-cog\"></i>")
+      .click(function(){
+        that.$column_modal
+          .on('show', function () {
+            _updateColumnModalBody.call(that, that.$column_modalbody)
+          })
+          .modal();
+      })
+    this.buttons.unshift($toggle);
+
+    return this.$column_modal;
+  }
+
+  function _initFilterModal() {
+    var o = this.options
+      , $e = this.$element
+      , $toggle = $("<a></a>")
+
+    o.filterModal.hide();
+    
+    // render the display modal button
+    $toggle
+      .addClass("btn")
+      .data("toggle", "modal")
+      .attr("href", "#")
+      .html("<i class=\"icon-filter\"></i>")
+      .click(function(){
+        $(o.filterModal)
+          .modal();
+      })
+    this.buttons.unshift($toggle);      
+  }
+
+  function _initPerPage() {
+    var o = this.options
+      , $e = this.$element
+      , that = this
+
+    // per page options and current filter/sorting
+    var $perpage_select = $("<a></a>")
+      .addClass("btn dropdown-toggle")
+      .attr("data-toggle", "dropdown")
+      .html(o.perPage + "&nbsp;")
+      .append(
+        $("<span></span>")
+          .addClass("caret")
+      )
+    this.buttons.push($perpage_select)
+
+    var $perpage_values = $("<ul></ul>")
+      .addClass("dropdown-menu")
+      .append(
+          $('<li data-value="5"><a href="#">5</a></li>')
+            .click(function(){ _updatePerPage.call(this, that)})
+        , $('<li data-value="10"><a href="#">10</a></li>')
+            .click(function(){ _updatePerPage.call(this, that)})
+        , $('<li data-value="20"><a href="#">20</a></li>')
+            .click(function(){ _updatePerPage.call(this, that)})
+        , $('<li data-value="50"><a href="#">50</a></li>')
+            .click(function(){ _updatePerPage.call(this, that)})
+        , $('<li data-value="100"><a href="#">100</a></li>')
+            .click(function(){ _updatePerPage.call(this, that)})
+      )
+    this.buttons.push($perpage_values)
+  }
+
+  function _initTableInfo() {
+    var o = this.options
+      , $e = this.$element
+      , $info = $("<a></a>")
+
+    // render the display modal button
+    $info
+      .addClass("btn")
+      .attr("href", "#")
+      .html("<i class=\"icon-info-sign\"></i>")
+
+    var $page_sort = []
+      , $page_filter = []
+
+    // sort
+    $.each(o.sort, function(i, v){
+      var heading
+      for(column in o.columns) {
+        if(o.columns[column].field == v[0]) heading = o.columns[column].title;
+      }
+      $page_sort.push( heading + " " + v[1].toUpperCase() )
+    })
+
+    // filter
+    $.each(o.filter, function(k, v) {
+      var heading
+      for(column in o.columns) {
+        if(o.columns[column].field == k) heading = o.columns[column].title;
+      }
+      $page_filter.push( heading + " = '" + v + "'" )
+    })
+
+    $($info).popover({
+        placement: "bottom"
+      , content: $('<dl></dl>').append(
+            $page_sort.length > 0 ? '<dt><i class="icon-th-list"></i> Sort:</dt><dd>' + $page_sort.join(", ") + '</dd>' : ''
+          , o.showFilter && $page_filter.length > 0 ? '<dt><i class="icon-filter"></i> Filter:</dt><dd>' + $page_filter.join(", ") + '</dd>' : ''
+        )
+    })
+
+    this.buttons.unshift($info);
+  }
+
+  function _updatePerPage(that) {
+    var o = that.options
+
+    // update the perpage value
+    o.perPage = $(this).data("value");
+
+    // the offset
+    var offset = o.currentPage * o.perPage
+    while(offset > o.totalRows) {
+      o.currentPage--;
+      offset = o.currentPage * o.perPage
+    }
+
+    if($(this).popover) $(this).popover('hide')
+
+    // update the table
+    that.render();
+  }
+
   function showError() {
     var o = this.options
       , $e = this.$element
@@ -585,83 +764,6 @@
     o.filter[$(this).data("filter")] = $(this).val();
 
     that.render();
-  }
-
-  function initModal() {
-    var o = this.options
-      , $e = this.$element
-      , $bottom_details = this.$bottom_details
-      , $toggle = $("<a></a>")
-
-    // localize the object
-    var that = this;
-
-    if(!this.$modal) {
-      this.$modal = $('<div></div>')
-        .attr("id", "dt-column-modal_" + Math.floor((Math.random()*100)+1))
-        .addClass("modal")
-        .hide()
-
-      // render the modal header
-      this.$modalheader = $("<div></div>")
-        .addClass("modal-header")
-        .append(
-          $("<button></button>")
-            .addClass("close")
-            .data("dismiss", "modal")
-            .text('x')
-            .click(function(){
-              that.$modal.modal('hide')
-            })
-        )
-        .append(
-          $("<h3></h3>")
-            .text("Toggle Columns")
-        )
-
-      // render the modal footer
-      this.$modalfooter = $("<div></div>")
-        .addClass("modal-footer")
-        .append(
-          $("<a></a>")
-            .attr("href", "#")
-            .addClass("btn btn-primary")
-            .text("Save")
-            .click(function(){
-              saveColumns.call(that)
-            })
-        )
-
-      // render the modal body
-      this.$modalbody = $("<div></div>")
-        .addClass("modal-body")
-
-      // render and add the modal to the container
-      this.$modal
-        .append(
-            this.$modalheader
-          , this.$modalbody
-          , this.$modalfooter
-        )
-        .appendTo(document.body);
-    }
-
-    // render the display modal button
-    $toggle
-      .addClass("btn btn-large pull-left")
-      .data("toggle", "modal")
-      .attr("href", "#" + this.$modal.attr("id"))
-      .html("<i class=\"icon-cog\"></i>")
-      .click(function(){
-        that.$modal
-          .on('show', function () {
-            _updateColumnModalBody.call(that, that.$modalbody)
-          })
-          .modal();
-      })
-    $bottom_details.prepend($toggle);
-
-    return this.$modal;
   }
 
   function _updateColumnModalBody(body) {
@@ -734,7 +836,7 @@
         }
     })
 
-    this.$modal.modal("hide")
+    this.$column_modal.modal("hide")
   }
 
 
@@ -788,17 +890,21 @@
   $.fn.datatable.defaults = {
     debug: false
   , id: undefined
+  , title: 'Data Table Results'
   , perPage: 10
   , pagePadding: 2
   , sort: [[]]
   , filter: {}
+  , buttons: []
+  , sectionHeader: undefined
   , totalRows: 0
   , currentPage: 1
   , showPagination: false
   , showTopPagination: false
   , showHeader: true
   , showFooter: false
-  , showFilter: false
+  , showFilterRow: false
+  , filterModal: undefined
   , allowExport: false
   , toggleColumns: true
   , url: ''
