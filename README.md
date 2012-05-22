@@ -1,7 +1,7 @@
 jquery-data-table
 =================
 
-@@version 1.1
+@@version 1.2
 
 This is a very lightweight datatable plugin for bootstrap. The plugin uses AJAX as its exclusive means for retrieving data. It's designed to be used with backend API calls communicating via JSON. I may work on additional features that will allow you to pass in the data separately, but it's already pretty powerful without it. 
 
@@ -38,6 +38,12 @@ DataTable Options
 + **id**: undefined
 [Optional] The unique ID for the datatable. Recommended to use this, especially when there's more than one table on a page. It also uses this ID when storing the column options to the localStorage
 
++ **title**: 'Data Table Results'
+[Optional] The title heading used if the sectionHeader is not pointed to a proper block element
+
++ **sectionHeader**: undefined
+[Optional] Points to a jQuery object or selector. This is used to attach the table toolbar to.
+
 + **perPage**: 10
 [Optional] How many rows you'd like to display per page of data. Simple enough, right?
 
@@ -49,6 +55,9 @@ DataTable Options
 
 + **filter**: {}
 [Optional] Tells the system what fields are to be filtered on and with what values to filter with. It's basically a key/value store where the key maps to the column field of the resultset.
+
++ **buttons**: []
+[Optional] Array of jQuery buttons that will append themselves to the toolbar. NOTE: If you attach the click event to the button directly, the event only seems to fire before the table is rerendered. It's suggested to bind the events outside the array.
 
 + **totalRows**: 0
 [Optional] Tells the datatable how many total rows are in the full resultset. This is used for pagination, however it can, and most likely will, be passed in from the serverside JSON response.
@@ -68,8 +77,11 @@ DataTable Options
 + **showFooter**: false
 [Optional] Show the footer? Draws the <tfoot> for the table. Currently, this isn't really implemented. I'm thinking that this will be an element that you can access and implement upon tableCallback()... which is also still something to be added :)
 
-+ **showFilter**: false
++ **showFilterRow**: false
 [Optional] Show the row of filters for selected columns. Currently it only support textbox filters for a column and posts the data back to the server on .change()
+
++ **filterModal**: undefined
+[Optional] HTML block that will display in the modal popup. Used to show additional filter options for the table. NOTE: Events for the Cancel and Save buttons must be written separately. Upon save, you must also apply the values to the options.filter object inorder to pass the new values in.
 
 + **allowExport**: false
 [Optional] TBI - To be implemented
