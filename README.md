@@ -1,7 +1,7 @@
 jquery-data-table
 =================
 
-@@version 1.2
+@@version 1.3
 
 This is a very lightweight datatable plugin for bootstrap. The plugin uses AJAX as its exclusive means for retrieving data. It's designed to be used with backend API calls communicating via JSON. I may work on additional features that will allow you to pass in the data separately, but it's already pretty powerful without it. 
 
@@ -85,6 +85,9 @@ DataTable Options
 
 + **allowExport**: false
 [Optional] TBI - To be implemented
+
++ **allowOverflow**: true
+[Optional] Sets the table wrapper to the size of the container and allows the overflow of the table to scroll. When disabled, the table will stretch the size of the container and may disrupt the layout of the page.
 
 + **toggleColumns**: true
 [Optional] Displays a toolbar button below the table that pops up a modal allowing you to show and hide select columns. The default state of a column can be set in the column properties.
