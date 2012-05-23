@@ -141,6 +141,10 @@
                 // initialize the toolbar
                 _initToolbar.call(that)
 
+                // nearly complete... let the user apply any final adjustments
+                if(o.tableCallback && typeof o.tableCallback === 'function')   
+                  o.tableCallback.call(that)
+
                 that.loading( false )
               }
             , error: function( e ) {
@@ -284,6 +288,10 @@
             this.columns.push($cell);
           }
 
+          // any final user adjustments to the header
+          if(o.headerCallback && typeof o.headerCallback === 'function') 
+            o.headerCallback.call(this)
+
           this.$table
             .append(this.$header);
         }
@@ -295,6 +303,10 @@
 
         if(!this.$footer) {
           this.$footer = $('<tfoot></tfoot>')
+
+          // any final user adjustments to the footer
+          if(o.footerCallback && typeof o.footerCallback === 'function') 
+            o.footerCallback.call(this)
 
           this.$table
             .append(this.$footer);
@@ -968,6 +980,9 @@
   , ascending: '<i class="icon-chevron-up"></i>'
   , descending: '<i class="icon-chevron-down"></i>'
   , rowCallback: undefined
+  , tableCallback: undefined
+  , headerCallback: undefined
+  , footerCallback: undefined
   };
 
 
