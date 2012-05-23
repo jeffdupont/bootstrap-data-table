@@ -1,5 +1,5 @@
 /*!
- * jQuery Data Table Plugin v1.3
+ * jQuery Data Table Plugin v1.4
  *
  * Author: Jeff Dupont
  * ==========================================================
