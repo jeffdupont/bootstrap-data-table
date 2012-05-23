@@ -1,5 +1,5 @@
 /*!
- * jQuery Data Table Plugin v1.2
+ * jQuery Data Table Plugin v1.3
  *
  * Author: Jeff Dupont
  * ==========================================================
@@ -62,10 +62,11 @@
         this.columns = []
         this.rows    = []
         this.buttons = []
-        this.$table  = undefined
-        this.$header = undefined
-        this.$body   = undefined
-        this.$footer = undefined
+        this.$wrapper    = undefined
+        this.$table      = undefined
+        this.$header     = undefined
+        this.$body       = undefined
+        this.$footer     = undefined
         this.$pagination = undefined
 
         if(this.$toolbar) this.$toolbar.remove();
@@ -137,20 +138,8 @@
                 // update the details for the results
                 that.details();
 
-                // create the perpage dropdown
-                _initPerPage.call(that);
-
-                // handle filter options
-                if(o.filterModal)     _initFilterModal.call(that);
-
-                // handle the column management
-                if(o.toggleColumns)   _initColumnModal.call(that);
-
-                // initialize the table info
-                _initTableInfo.call(that);
-
-                // create the buttons and section functions
-                that.toolbar();
+                // initialize the toolbar
+                _initToolbar.call(that)
 
                 that.loading( false )
               }
@@ -252,13 +241,18 @@
     , table: function () {
         var $e = this.$element
 
+        if(!this.$table_wrapper) {
+          this.$wrapper = $("<div></div>")
+            .addClass("dt-table-wrapper")
+        }
+
         if (!this.$table) {
           this.$table = $('<table></table>')
             .addClass("table table-striped")
-
-          $e.html(this.$table);
         }
-        return this.$table;
+
+        this.$wrapper.append(this.$table);
+        return this.$wrapper;
       }
 
     , header: function () {
@@ -290,7 +284,7 @@
             this.columns.push($cell);
           }
 
-          this.table()
+          this.$table
             .append(this.$header);
         }
         return this.$header;
@@ -302,7 +296,7 @@
         if(!this.$footer) {
           this.$footer = $('<tfoot></tfoot>')
 
-          this.table()
+          this.$table
             .append(this.$footer);
         }
         return this.$footer;
@@ -324,7 +318,7 @@
 
           if(o.showFilterRow) this.$body.prepend(this.filter());
 
-          this.table()
+          this.$table
             .append(this.$body);
         }
         return this.$body;Row
@@ -558,6 +552,28 @@
  /* DATATABLE PRIVATE METHODS
   * ========================= */
 
+  function _initToolbar() {
+    var o = this.options
+
+    // create the perpage dropdown
+    _initPerPage.call(this);
+
+    // handle filter options
+    if(o.filterModal)     _initFilterModal.call(this);
+
+    // handle the column management
+    if(o.toggleColumns)   _initColumnModal.call(this);
+
+    // handle the overflow option
+    if(o.allowOverflow)   _initOverflowToggle.call(this);
+
+    // initialize the table info
+    _initTableInfo.call(this);
+
+    // create the buttons and section functions
+    this.toolbar();
+  }
+
   function _initColumnModal() {
     var o = this.options
       , $e = this.$element
@@ -729,6 +745,43 @@
     })
 
     this.buttons.unshift($info);
+  }
+
+  function _initOverflowToggle() {
+    var o = this.options
+      , $wrapper = this.$wrapper
+      , $overflow = $("<a></a>")
+
+    // create the button
+    $overflow
+      .addClass("btn")
+      .attr("href", "#")
+      .html("<i class=\"icon-resize-full\"></i>")
+      .click(function() {
+        _toggleOverflow.call(this, $wrapper);
+      })
+    this.buttons.push($overflow)
+  }
+
+  function _toggleOverflow(el) {
+    if(el.css('overflow') == 'scroll') {
+      $(this).children("i")
+        .attr("class", "icon-resize-full")
+
+      el.css({ 
+          overflow: 'visible' 
+        , width: 'auto'
+      })
+    }
+    else {
+      $(this).children("i")
+        .attr("class", "icon-resize-small")
+
+      el.css({ 
+          overflow: 'scroll' 
+        , width: el.width()
+      })
+    }
   }
 
   function _updatePerPage(that) {
@@ -906,6 +959,7 @@
   , showFilterRow: false
   , filterModal: undefined
   , allowExport: false
+  , allowOverflow: true
   , toggleColumns: true
   , url: ''
   , columns: []
