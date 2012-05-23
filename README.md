@@ -107,6 +107,15 @@ DataTable Options
 + **rowCallback**: undefined
 [Optional] This is a callback function when a row is completed with rendering allowing you to further manipulate the display. It will pass the current row object as the only parameter to the function.
 
++ **tableCallback**: undefined
+[Optional] This is a callback function when the table has completed rendering just prior to being displayed on the page.
+
++ **headerCallback**: undefined
+[Optional] This is a callback function when the header has completed rendering allowing you to further manipulate the columns displayed.
+
++ **footerCallback**: undefined
+[Optional] This is a callback function when the footer has completed rendering allowing you to further manipulate the data for the footer. 
+
 
 
 
