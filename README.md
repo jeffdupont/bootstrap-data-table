@@ -1,7 +1,7 @@
 jquery-data-table
 =================
 
-@@version 1.3
+@@version 1.4
 
 This is a very lightweight datatable plugin for bootstrap. The plugin uses AJAX as its exclusive means for retrieving data. It's designed to be used with backend API calls communicating via JSON. I may work on additional features that will allow you to pass in the data separately, but it's already pretty powerful without it. 
 
@@ -31,6 +31,8 @@ NOTE: However, one exception to the redraw is during initialization. If you'd li
 
 DataTable Options
 -----------------
+
+Below are the basic options for creating a new datatable.
 
 + **debug**: false
 [Optional] Pretty self-explanitory, enable this to see certain messages in the console.log. It's a little limited on what I'm currently displaying during debug mode, but that'll change.
@@ -99,6 +101,8 @@ DataTable Options
 
 Column Options
 --------------
+
+Below are the options when setting up the columns for a new datatable.
 
 + **title**: ""
 [Required] This is the column heading that will be displayed
