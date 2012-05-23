@@ -681,6 +681,7 @@
       .addClass("btn dropdown-toggle")
       .attr("data-toggle", "dropdown")
       .html(o.perPage + "&nbsp;")
+      .css({ fontWeight: 'normal' })
       .append(
         $("<span></span>")
           .addClass("caret")
@@ -689,6 +690,7 @@
 
     var $perpage_values = $("<ul></ul>")
       .addClass("dropdown-menu")
+      .css({ fontSize: 'initial', fontWeight: 'normal' })
       .append(
           $('<li data-value="5"><a href="#">5</a></li>')
             .click(function(){ _updatePerPage.call(this, that)})
