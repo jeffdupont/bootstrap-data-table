@@ -1,7 +1,7 @@
 jquery-data-table
 =================
 
-@@version 1.4
+@@version 1.5
 
 This is a very lightweight datatable plugin for bootstrap. The plugin uses AJAX as its exclusive means for retrieving data. It's designed to be used with backend API calls communicating via JSON. I may work on additional features that will allow you to pass in the data separately, but it's already pretty powerful without it. 
 
@@ -40,6 +40,8 @@ Below are the basic options for creating a new datatable.
 [Optional] The unique ID for the datatable. Recommended to use this, especially when there's more than one table on a page. It also uses this ID when storing the column options to the localStorage
 + **title**: 'Data Table Results'
 [Optional] The title heading used if the sectionHeader is not pointed to a proper block element
++ **class**: 'table table-striped table-bordered'
+[Optional] This is the class that is applied to the table element.
 + **sectionHeader**: undefined
 [Optional] Points to a jQuery object or selector. This is used to attach the table toolbar to.
 + **perPage**: 10
@@ -50,6 +52,8 @@ Below are the basic options for creating a new datatable.
 [Optional] Array of arrays for sorting. This tells the system which columns and in what order the default page call is using. This option can also be passed in from the serverside JSON response.
 + **filter**: {}
 [Optional] Tells the system what fields are to be filtered on and with what values to filter with. It's basically a key/value store where the key maps to the column field of the resultset.
++ **post**: {}
+[Optional] Passes additional options back with each call to the server.
 + **buttons**: []
 [Optional] Array of jQuery buttons that will append themselves to the toolbar. NOTE: If you attach the click event to the button directly, the event only seems to fire before the table is rerendered. It's suggested to bind the events outside the array.
 + **totalRows**: 0
@@ -72,6 +76,8 @@ Below are the basic options for creating a new datatable.
 [Optional] TBI - To be implemented
 + **allowOverflow**: true
 [Optional] Sets the table wrapper to the size of the container and allows the overflow of the table to scroll. When disabled, the table will stretch the size of the container and may disrupt the layout of the page.
++ **allowMultipleSort**: false
+[Optional] When this is enabled, the sort array will hold prior column sorts. If it's disabled, then only one column will be passed as the sort parameter to the server.
 + **toggleColumns**: true
 [Optional] Displays a toolbar button below the table that pops up a modal allowing you to show and hide select columns. The default state of a column can be set in the column properties.
 + **url**: 'data.php'
@@ -90,6 +96,8 @@ Below are the basic options for creating a new datatable.
 [Optional] This is a callback function when the header has completed rendering allowing you to further manipulate the columns displayed.
 + **footerCallback**: undefined
 [Optional] This is a callback function when the footer has completed rendering allowing you to further manipulate the data for the footer. 
++ **tablePreRender**: undefined
+[Optional] This is a function that will be called before the table is rendered to the page. This allows you to dynamically manipulate the columns and data before the table is displayed.
 
 
 
@@ -118,3 +126,5 @@ Below are the options when setting up the columns for a new datatable.
 [Optional] Will display the textbox if the `showFilter` option is enabled for the DataTable.
 + **hidden**: false
 [Optional] The initial state of the column for the table. This can be toggled if the `toggleColumns` option is enabled for the DataTable.
++ **css**: {}
+[Optional] Object properties for css values for each column cell. This uses the .css() method of a jQuery element so format the object as such.
