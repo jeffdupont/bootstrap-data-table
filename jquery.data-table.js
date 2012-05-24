@@ -1,5 +1,5 @@
 /*!
- * jQuery Data Table Plugin v1.5
+ * jQuery Data Table Plugin v1.5.1
  *
  * Author: Jeff Dupont
  * ==========================================================
@@ -733,9 +733,6 @@
         $("<span></span>")
           .addClass("caret")
       )
-      .click(function() {
-        return false;
-      })
     this.buttons.push($perpage_select)
 
     var $perpage_values = $("<ul></ul>")
