@@ -1,9 +1,9 @@
 /*!
- * jQuery Data Table Plugin v1.5.1
+ * jQuery Data Table Plugin v1.5.2
  *
  * Author: Jeff Dupont
  * ==========================================================
- * Copyright 2012 iAcquire, LLC.
+ * Copyright 2012 phxis.net, LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@
     this.rows = [];
     this.buttons = [];
 
+    this.localStorageId = "datatable_" + (options.id || options.url.replace(/\W/ig, '_'))
+
     // set the defaults for the column options array
     for(column in this.options.columns) {
       // check sortable
@@ -45,6 +47,11 @@
         .html("No Results Found")
 
     this.$element.addClass("clearfix")
+
+    // clear out the localStorage for this entry
+    if(localStorage) {
+      localStorage[this.localStorageId] = 'false'
+    }
 
     this.render();
   };
@@ -124,6 +131,9 @@
                 if(o.tablePreRender && typeof o.tablePreRender === 'function')   
                   o.tablePreRender.call(that)
 
+                // retrieve the saved columns
+                _retrieveColumns.call(that, localStorage['boo'])//that.localStorageId])
+
                 // append the table
                 $e.append(that.table());
 
@@ -173,7 +183,7 @@
           this.$loading = $("<div></div>")
             .css({
                 position: 'absolute'
-              , top: parseInt($e.position().top) + Math.floor($e.height() / 2)
+              , top: parseInt($e.position().top) + 5
               , left: parseInt($e.position().left) + parseInt($e.css("marginLeft")) + Math.floor($e.width() / 4)
               , width: Math.floor($e.width() / 2) + "px"
             })
@@ -659,7 +669,7 @@
             .addClass("btn btn-primary")
             .text("Save")
             .click(function() {
-              saveColumns.call(that)
+              _saveColumns.call(that)
               return false;
             })
         )
@@ -786,14 +796,14 @@
       for(column in o.columns) {
         if(o.columns[column].field == k) heading = o.columns[column].title;
       }
-      $page_filter.push( heading + " = '" + v + "'" )
+      $page_filter.push( (heading || k) + " = '" + v + "'" )
     })
 
     $($info).popover({
         placement: "bottom"
       , content: $('<dl></dl>').append(
             $page_sort.length > 0 ? '<dt><i class="icon-th-list"></i> Sort:</dt><dd>' + $page_sort.join(", ") + '</dd>' : ''
-          , o.showFilter && $page_filter.length > 0 ? '<dt><i class="icon-filter"></i> Filter:</dt><dd>' + $page_filter.join(", ") + '</dd>' : ''
+          , $page_filter.length > 0 ? '<dt><i class="icon-filter"></i> Filter:</dt><dd>' + $page_filter.join(", ") + '</dd>' : ''
         )
     })
 
@@ -935,31 +945,41 @@
     return false;
   }
 
-  function saveColumns() {
+  function _saveColumns() {
     var o = this.options
       , columns = []
 
     // save the columns to the localstorage
     if(localStorage) {
-      localStorage["datatable_" + (o.id || o.url.replace(/\W/ig, '_'))] = o.columns
+      localStorage[this.localStorageId] = JSON.stringify(o.columns)
     }
 
     $.ajax({
         url: o.url
       , type: "POST"
       , dataType: "json"
-      , data: {
-            action: "saveColumns"
+      , data:  $.extend({}, o.post, {
+            action: "save-columns"
           , columns: JSON.stringify(o.columns)
           , sort: JSON.stringify(o.sort)
           , filter: JSON.stringify(o.filter)
-        }
+        })
       , success: function( res ) {
           if(o.debug) console.log("columns saved")
         }
     })
 
     this.$column_modal.modal("hide")
+  }
+
+  function _retrieveColumns(data) {
+    var o = this.options
+      , columns = data ? JSON.parse(data) : []
+      , res = this.resultset
+
+    for(column in o.columns) {
+      o.columns[column] = $.extend({}, o.columns[column], res.columns[column], columns[column]);
+    }
   }
 
 
