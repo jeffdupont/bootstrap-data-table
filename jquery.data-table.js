@@ -978,7 +978,7 @@
       , res = this.resultset
 
     for(column in o.columns) {
-      o.columns[column] = $.extend({}, o.columns[column], res.columns[column], columns[column]);
+      o.columns[column] = $.extend({}, o.columns[column], (res.columns ? res.columns[column] : []), columns[column]);
     }
   }
 
