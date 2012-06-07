@@ -1,5 +1,5 @@
 /*!
- * jQuery Data Table Plugin v1.5.2
+ * Bootstrap Data Table Plugin v1.5.2
  *
  * Author: Jeff Dupont
  * ==========================================================

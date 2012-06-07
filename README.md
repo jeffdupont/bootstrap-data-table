@@ -1,4 +1,4 @@
-jquery-data-table
+bootstrap-data-table
 =================
 
 @@version 1.5
@@ -14,13 +14,13 @@ Look at the example.html file to see it in action. But the basic premise is this
 
 ```
 $("#my-dt-container").datatable({
-		url: "data.php"
-	,	columns: [
-			{
-					title: "The heading of your column"
-				,	field: "The field the column maps to from the resultset"
-			}
-		]
+        url: "data.php"
+    ,   columns: [
+            {
+                    title: "The heading of your column"
+                ,   field: "The field the column maps to from the resultset"
+            }
+        ]
 })
 ```
 
@@ -121,7 +121,7 @@ Below are the options when setting up the columns for a new datatable.
 + **sortable**: false
 [Optional] Tells the table if the column is allowed to be sorted by the user. The column CAN, however, still be passed into the sort array to display that it is currently being sorted. 
 + **callback**: undefined
-[Optional] This is a function called whenever the cell of that column is about to be populated with data. This allows you to manipulate the data for that cell via any means. The parameters passed to the function is the data for that row and the properties for that particular column. The return will accept straight HTML or a jquery object.
+[Optional] This is a function called whenever the cell of that column is about to be populated with data. This allows you to manipulate the data for that cell via any means. The parameters passed to the function is the data for that row and the properties for that particular column. The return will accept straight HTML or a jQuery object.
 + **filter**: false
 [Optional] Will display the textbox if the `showFilter` option is enabled for the DataTable.
 + **hidden**: false

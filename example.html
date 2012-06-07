@@ -6,7 +6,7 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="js/bootstrap.js"></script>
-<script src="jquery.data-table.js"></script>
+<script src="bootstrap.data-table.js"></script>
 </head>
 
 <body>
@@ -60,7 +60,7 @@
 
 $("#table-container_1").datatable({
     perPage: 5
-  , url: 'data.php'
+  , url: 'example-data.php'
   , showPagination: true
   , showFilter: true
   , filterModal: $("#table-container_1-filter")
@@ -104,7 +104,7 @@ $("#table-container_1").datatable({
 
 $("#table-container_2").datatable({
     perPage: 5
-  , url: 'data.php'
+  , url: 'example-data.php'
   , showPagination: true
   , showFilter: true
   , buttons: [
