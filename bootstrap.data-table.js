@@ -240,6 +240,9 @@
           $e.before(this.$section_header)
         }
         else {
+          if(!this.$section_header) {
+            this.$section_header = $("<div></div>")
+          }
           this.$section_header.append(this.$toolbar)
         }
 
