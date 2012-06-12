@@ -3,7 +3,7 @@
  *
  * Author: Jeff Dupont
  * ==========================================================
- * Copyright 2012 phxis.net, LLC.
+ * Copyright 2012
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,12 +36,12 @@
     // set the defaults for the column options array
     for(column in this.options.columns) {
       // check sortable
-      if(typeof this.options.columns[column].sortable === undefined) 
+      if(typeof this.options.columns[column].sortable === undefined)
         this.options.columns[column].sortable = true;
     }
 
-    this.$default = this.$element.children().length ? 
-      this.$element.children() : 
+    this.$default = this.$element.children().length ?
+      this.$element.children() :
       $("<div></div>")
         .addClass("alert alert-error")
         .html("No Results Found")
@@ -107,7 +107,7 @@
 
                 if(!res || res === undefined) {
                   showError.call(that);
-                  return;   
+                  return;
                 }
 
                 that.resultset = res;
@@ -128,7 +128,7 @@
                 // set the current page if we're forcing it from the server
                 if(res.currentPage) o.currentPage = parseInt(res.currentPage);
 
-                if(o.tablePreRender && typeof o.tablePreRender === 'function')   
+                if(o.tablePreRender && typeof o.tablePreRender === 'function')
                   o.tablePreRender.call(that)
 
                 // retrieve the saved columns
@@ -148,10 +148,10 @@
                 // fill in the table body
                 that.body();
 
-                // render the pagination              
-                if(o.showTopPagination && that.pagination()) 
+                // render the pagination
+                if(o.showTopPagination && that.pagination())
                   that.$top_details.append(that.pagination().clone(true));
-                if(o.showPagination && that.pagination())    
+                if(o.showPagination && that.pagination())
                   that.$bottom_details.append(that.pagination().clone(true));
 
                 // update the details for the results
@@ -161,7 +161,7 @@
                 _initToolbar.call(that)
 
                 // nearly complete... let the user apply any final adjustments
-                if(o.tableCallback && typeof o.tableCallback === 'function')   
+                if(o.tableCallback && typeof o.tableCallback === 'function')
                   o.tableCallback.call(that)
 
                 that.loading( false )
@@ -172,7 +172,7 @@
 
                 that.loading( false )
               }
-          })     
+          })
         }
       }
 
@@ -300,7 +300,7 @@
                 .css({'cursor':'pointer'})
 
             for(var i = 0; i < o.sort.length; i++) {
-              if(o.sort[i][0] == colprop.field) {            
+              if(o.sort[i][0] == colprop.field) {
                 if(o.sort[i][1] == "asc") {
                   $cell.append($(o.ascending))
                   colprop.sortOrder = "asc"
@@ -317,7 +317,7 @@
           }
 
           // any final user adjustments to the header
-          if(o.headerCallback && typeof o.headerCallback === 'function') 
+          if(o.headerCallback && typeof o.headerCallback === 'function')
             o.headerCallback.call(this)
 
           this.$table
@@ -333,7 +333,7 @@
           this.$footer = $('<tfoot></tfoot>')
 
           // any final user adjustments to the footer
-          if(o.footerCallback && typeof o.footerCallback === 'function') 
+          if(o.footerCallback && typeof o.footerCallback === 'function')
             o.footerCallback.call(this)
 
           this.$table
@@ -408,7 +408,7 @@
         }
 
         // callback for postprocessing on the row
-        if(o.rowCallback && typeof o.rowCallback === "function") 
+        if(o.rowCallback && typeof o.rowCallback === "function")
           $row = o.rowCallback( $row, rowdata );
 
         return $row;
@@ -420,7 +420,7 @@
           , o = this.options
 
         // preprocess on the cell data for a column
-        if(o.columns[column].callback && typeof o.columns[column].callback === "function") 
+        if(o.columns[column].callback && typeof o.columns[column].callback === "function")
           celldata = o.columns[column].callback( data, o.columns[column] )
 
         $cell
@@ -716,7 +716,7 @@
       , $toggle = $("<a></a>")
 
     o.filterModal.hide();
-    
+
     // render the display modal button
     $toggle
       .addClass("btn")
@@ -728,7 +728,7 @@
           .modal();
         return false;
       })
-    this.buttons.unshift($toggle);      
+    this.buttons.unshift($toggle);
   }
 
   function _initPerPage() {
@@ -835,8 +835,8 @@
       $(this).children("i")
         .attr("class", "icon-resize-full")
 
-      el.css({ 
-          overflow: 'visible' 
+      el.css({
+          overflow: 'visible'
         , width: 'auto'
       })
     }
@@ -844,8 +844,8 @@
       $(this).children("i")
         .attr("class", "icon-resize-small")
 
-      el.css({ 
-          overflow: 'scroll' 
+      el.css({
+          overflow: 'scroll'
         , width: el.width()
       })
     }
@@ -880,7 +880,7 @@
     _initToolbar.call(this)
 
     // nearly complete... let the user apply any final adjustments
-    if(o.tableCallback && typeof o.tableCallback === 'function')   
+    if(o.tableCallback && typeof o.tableCallback === 'function')
       o.tableCallback.call(this)
 
     this.loading( false );
@@ -939,9 +939,9 @@
 
     $(this)
       .find("a.active")
-      .removeClass("active")        
+      .removeClass("active")
 
-    o.columns[column].hidden ? 
+    o.columns[column].hidden ?
       $(this).find(".icon-remove").parent().addClass("active") :
       $(this).find(".icon-ok").parent().addClass("active")
 
