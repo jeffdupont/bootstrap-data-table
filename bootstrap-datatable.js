@@ -53,7 +53,7 @@
       localStorage[this.localStorageId] = 'false'
     }
 
-    this.render();
+    if(this.options.autoLoad === true) this.render();
   };
 
   DataTable.prototype = {
@@ -1066,6 +1066,7 @@
   , headerCallback: undefined
   , footerCallback: undefined
   , tablePreRender: undefined
+  , autoLoad: true
   };
 
 
