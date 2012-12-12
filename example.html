@@ -3,7 +3,7 @@
 <head>
 
 <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
 <script src="bootstrap-datatable.min.js"></script>
 </head>
@@ -59,8 +59,8 @@
 
 $("#table-container_1").datatable({
     perPage: 5
-  // , url: 'example-data.php'
-  , url: 'example-data.json'
+  , url: 'example-data.php'
+  // , url: 'example-data.json'
   , showPagination: true
   , showFilter: true
   , filterModal: $("#table-container_1-filter")
@@ -104,8 +104,9 @@ $("#table-container_1").datatable({
 
 $("#table-container_2").datatable({
     perPage: 5
-  // , url: 'example-data.php'
-  , url: 'example-data.json'
+  , allowTableinfo: false
+  , url: 'example-data.php'
+  // , url: 'example-data.json'
   , showPagination: true
   , showFilter: true
   , buttons: [
