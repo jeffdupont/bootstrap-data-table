@@ -3,7 +3,7 @@ bootstrap-data-table
 
 @@version 1.5
 
-This is a very lightweight datatable plugin for bootstrap. The plugin uses AJAX as its exclusive means for retrieving data. It's designed to be used with backend API calls communicating via JSON. I may work on additional features that will allow you to pass in the data separately, but it's already pretty powerful without it. 
+This is a very lightweight datatable plugin for bootstrap. The plugin uses AJAX as its exclusive means for retrieving data. It's designed to be used with backend API calls communicating via JSON. I may work on additional features that will allow you to pass in the data separately, but it's already pretty powerful without it.
 
 
 
@@ -24,7 +24,7 @@ $("#my-dt-container").datatable({
 })
 ```
 
-It's recommended to utilize the ID attribute of the container so the datatable can easily operate multiple instances on a single page. Each time the table is rendered/updated the plugin will clear out the current children in the container and redraw the table. 
+It's recommended to utilize the ID attribute of the container so the datatable can easily operate multiple instances on a single page. Each time the table is rendered/updated the plugin will clear out the current children in the container and redraw the table.
 
 NOTE: However, one exception to the redraw is during initialization. If you'd like a custom "No Results" element, place it in the container before initializing the datatable on that container. The plugin will take the children of the container and store that as its default message when there is no data in the resultset.
 
@@ -80,6 +80,8 @@ Below are the basic options for creating a new datatable.
 [Optional] When this is enabled, the sort array will hold prior column sorts. If it's disabled, then only one column will be passed as the sort parameter to the server.
 + **toggleColumns**: true
 [Optional] Displays a toolbar button below the table that pops up a modal allowing you to show and hide select columns. The default state of a column can be set in the column properties.
++ **allowTableinfo**: true
+[Optional] Displays the table info button
 + **url**: 'data.php'
 [Required] This is the url that the table will call for it's data. It will post the current sort, filter, and pagination values to the server. Reference the `data.php` page to see how to format the expected JSON response.
 + **columns**: []
@@ -95,7 +97,7 @@ Below are the basic options for creating a new datatable.
 + **headerCallback**: undefined
 [Optional] This is a callback function when the header has completed rendering allowing you to further manipulate the columns displayed.
 + **footerCallback**: undefined
-[Optional] This is a callback function when the footer has completed rendering allowing you to further manipulate the data for the footer. 
+[Optional] This is a callback function when the footer has completed rendering allowing you to further manipulate the data for the footer.
 + **tablePreRender**: undefined
 [Optional] This is a function that will be called before the table is rendered to the page. This allows you to dynamically manipulate the columns and data before the table is displayed.
 
@@ -119,7 +121,7 @@ Below are the options when setting up the columns for a new datatable.
 + **custom**: ""
 [Required/Optional] This is HTML that you would like to display in the column for ALL rows in the recordset. For instance, a button or link. This is required if the `field` option is not supplied
 + **sortable**: false
-[Optional] Tells the table if the column is allowed to be sorted by the user. The column CAN, however, still be passed into the sort array to display that it is currently being sorted. 
+[Optional] Tells the table if the column is allowed to be sorted by the user. The column CAN, however, still be passed into the sort array to display that it is currently being sorted.
 + **callback**: undefined
 [Optional] This is a function called whenever the cell of that column is about to be populated with data. This allows you to manipulate the data for that cell via any means. The parameters passed to the function is the data for that row and the properties for that particular column. The return will accept straight HTML or a jQuery object.
 + **filter**: false
