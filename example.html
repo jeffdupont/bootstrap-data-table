@@ -2,11 +2,11 @@
 <html>
 <head>
 
-<link href="css/bootstrap.css" rel="stylesheet">
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="js/bootstrap.js"></script>
-<script src="bootstrap.data-table.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+<script src="bootstrap-datatable.js"></script>
 </head>
 
 <body>
@@ -14,14 +14,14 @@
 
 <header class="jumbotron subhead" id="overview">
   <h1>Data Table Example</h1>
-  <p class="lead">Basic example of the new AJAX powered data table for iAcquire.</p>
+  <p class="lead">Basic example of the new AJAX powered data table.</p>
 </header>
 
 <div class="row">
   <div class="span12">
     <div id="table-container_1">
     </div>
-    <div id="table-container_1-filter" class="modal">
+    <div id="table-container_1-filter" class="modal hide">
       <div class="modal-header">
         <button class="close" data-dismiss="modal">x</button>
         <h3>Filter Options</h3>
@@ -62,8 +62,8 @@ $("#table-container_1").datatable({
     perPage: 5
   , url: 'example-data.php'
   , showPagination: true
-  , showFilter: true
-  , filterModal: $("#table-container_1-filter")
+  // , showFilter: true
+  // , filterModal: $("#table-container_1-filter")
   , columns: [
         {
             title: "Column 1"
@@ -84,7 +84,7 @@ $("#table-container_1").datatable({
           , sortable: false
           , field: "column_2"
           , filter: true
-          , css: { 
+          , css: {
                 textAlign: 'right'
             }
         }
@@ -92,7 +92,7 @@ $("#table-container_1").datatable({
             title: "Column 4"
           , sortable: false
           , field: "column_3"
-          , css: { 
+          , css: {
                 textAlign: 'right'
             }
           , hidden: true
@@ -106,7 +106,7 @@ $("#table-container_2").datatable({
     perPage: 5
   , url: 'example-data.php'
   , showPagination: true
-  , showFilter: true
+  // , showFilter: true
   , buttons: [
       $("<a></a>")
         .addClass("btn")

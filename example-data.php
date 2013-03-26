@@ -20,7 +20,6 @@ $example = array(
 
 );
 
-
 for($i = 1; $i <= $per_page; $i++) {
   $current_row = ($current_page * $per_page) - $per_page + $i;
   if($current_row > $total_rows) break;
@@ -33,4 +32,5 @@ for($i = 1; $i <= $per_page; $i++) {
   );
 }
 
+// header('Content-type: text/json');
 echo json_encode($example);

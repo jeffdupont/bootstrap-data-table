@@ -131,8 +131,8 @@
                 if(o.tablePreRender && typeof o.tablePreRender === 'function')
                   o.tablePreRender.call(that);
 
-                // retrieve the saved columns
-                _retrieveColumns.call(that, that.localStorageId);
+                // TODO FUTURE FEATURE: retrieve the saved columns
+                //_retrieveColumns.call(that, that.localStorageId);
 
                 // append the table
                 $e.append(that.table());
@@ -507,8 +507,10 @@
                   .data("page", 1)
                   .html("&larr; First")
                   .click(function() {
-                    o.currentPage = 1;
-                    that.render();
+                    if (o.currentPage > 1) {
+                      o.currentPage = 1;
+                      that.render();
+                    }
                     return false;
                   })
               )
@@ -518,8 +520,10 @@
                   .data("page", o.currentPage - 1)
                   .text("Prev")
                   .click(function() {
-                    o.currentPage -= 1;
-                    that.render();
+                    if (o.currentPage > 1) {
+                      o.currentPage -= 1;
+                      that.render();
+                    }
                     return false;
                   })
               )
@@ -529,8 +533,10 @@
                   .data("page", o.currentPage + 1)
                   .text("Next")
                   .click(function() {
-                    o.currentPage += 1;
-                    that.render();
+                    if (o.currentPage < o.pageCount) {
+                      o.currentPage += 1;
+                      that.render();
+                    }
                     return false;
                   })
               )
@@ -540,8 +546,10 @@
                   .data("page", o.pageCount)
                   .html("Last &rarr;")
                   .click(function() {
-                    o.currentPage = o.pageCount;
-                    that.render();
+                    if (o.currentPage < o.pageCount) {
+                      o.currentPage = o.pageCount;
+                      that.render();
+                    }
                     return false;
                   })
               );
@@ -575,8 +583,10 @@
                   .data("page", i)
                   .text(i)
                   .click(function() {
-                    o.currentPage = $(this).data('page');
-                    that.render();
+                    if (o.currentPage !== $(this).data('page')) {
+                      o.currentPage = $(this).data('page');
+                      that.render();
+                    }
                     return false;
                   })
               );
