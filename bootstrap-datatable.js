@@ -1,5 +1,5 @@
 /*!
- * Bootstrap Data Table Plugin v1.5.3
+ * Bootstrap Data Table Plugin v1.5.4
  *
  * Author: Jeff Dupont
  * ==========================================================
@@ -192,7 +192,7 @@
                 .addClass("progress progress-striped active")
                 .append($('<div class="bar" style="width: 100%"></div>'))
             )
-            .appendTo(document.body);
+            .appendTo($e.parent());
         }
 
         if(show) {
@@ -873,6 +873,8 @@
       o.currentPage--;
       offset = o.currentPage * o.perPage;
     }
+
+    if(o.currentPage === 0) o.currentPage = 1;
 
     if($(this).popover) $(this).popover('hide');
 
