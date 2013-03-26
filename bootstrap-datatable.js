@@ -635,7 +635,7 @@
     if(o.allowOverflow)   _initOverflowToggle.call(this);
 
     // initialize the table info
-    _initTableInfo.call(this);
+    if(o.allowTableinfo)   _initTableInfo.call(this);
 
     // create the buttons and section functions
     this.toolbar();
