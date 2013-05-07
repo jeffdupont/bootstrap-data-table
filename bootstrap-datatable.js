@@ -293,6 +293,7 @@
 
         if(!this.$header) {
           this.$header = $('<thead></thead>');
+          var row = $('<tr></tr>');
 
           // loop through the columns
           for(var column in o.columns) {
@@ -317,7 +318,8 @@
               }
             }
 
-            this.$header.append($cell);
+            row.append($cell);
+            this.$header.append(row);
             this.columns.push($cell);
           }
 
