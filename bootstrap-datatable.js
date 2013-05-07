@@ -1,5 +1,5 @@
 /*!
- * Bootstrap Data Table Plugin v1.5.4
+ * Bootstrap Data Table Plugin v1.5.5
  *
  * Author: Jeff Dupont
  * ==========================================================
@@ -31,6 +31,7 @@
     this.rows = [];
     this.buttons = [];
 
+    // this needs to be handled better
     this.localStorageId = "datatable_" + (options.id || options.url.replace(/\W/ig, '_'));
 
     // set the defaults for the column options array
@@ -52,6 +53,12 @@
     if(localStorage) {
       localStorage[this.localStorageId] = 'false';
     }
+
+    if(this.options.tablePreRender && typeof this.options.tablePreRender === 'function')
+      this.options.tablePreRender.call(this)
+
+    // initialize the toolbar
+    _initToolbar.call(this)
 
     if(this.options.autoLoad === true) this.render();
   };
@@ -105,14 +112,9 @@
             , success: function( res ) {
                 if(o.debug) console.log(res);
 
-                if(!res || res === undefined) {
-                  showError.call(that);
-                  return;
-                }
-
                 that.resultset = res;
 
-                if(!res.data || res.data.length === 0) {
+                if(!res || res === undefined || !res.data || res.data.length == 0) {
                   showError.call(that);
                   return;
                 }
@@ -128,11 +130,8 @@
                 // set the current page if we're forcing it from the server
                 if(res.currentPage) o.currentPage = parseInt(res.currentPage);
 
-                if(o.tablePreRender && typeof o.tablePreRender === 'function')
-                  o.tablePreRender.call(that);
-
-                // TODO FUTURE FEATURE: retrieve the saved columns
-                //_retrieveColumns.call(that, that.localStorageId);
+                // retrieve the saved columns
+                _retrieveColumns.call(that, localStorage[that.localStorageId])
 
                 // append the table
                 $e.append(that.table());
@@ -192,7 +191,7 @@
                 .addClass("progress progress-striped active")
                 .append($('<div class="bar" style="width: 100%"></div>'))
             )
-            .appendTo($e.parent());
+            .appendTo(document.body)
         }
 
         if(show) {
@@ -240,10 +239,14 @@
           $e.before(this.$section_header);
         }
         else {
-          if(!this.$section_header) {
-            this.$section_header = $("<div></div>");
-          }
-          this.$section_header.append(this.$toolbar);
+            if(!this.$toolbar_container) {
+              this.$toolbar_container = $("<div></div>")
+                .addClass('dt-toolbar-container clearfix')
+            }
+            $e.prepend(
+              this.$toolbar_container
+                .append(this.$toolbar)
+            );
         }
 
         return this.$toolbar;
@@ -256,7 +259,9 @@
           , end = 0
           , that = this;
 
-        start = (o.currentPage * o.perPage) - o.perPage + 1;
+        start = (o.currentPage * o.perPage) - o.perPage + 1
+        if(start < 1) start = 1;
+
         end = (o.currentPage * o.perPage);
         if(end > o.totalRows) end = o.totalRows;
 
@@ -327,14 +332,26 @@
       }
 
     , footer: function () {
-        var res = this.resultset;
+        var o = this.options
+          , res = this.resultset
 
         if(!this.$footer) {
           this.$footer = $('<tfoot></tfoot>');
 
+          // loop through the columns
+          for(column in o.columns) {
+            var $cell = $('<td></td>')
+
+            $cell
+              .data("cell_properties", o.columns[column])
+              .addClass(o.columns[column].classname)
+
+            this.$footer.append($cell);
+          }
+
           // any final user adjustments to the footer
           if(o.footerCallback && typeof o.footerCallback === 'function')
-            o.footerCallback.call(this);
+            o.footerCallback.call(this, this.resultset.footer)
 
           this.$table
             .append(this.$footer);
@@ -421,12 +438,12 @@
 
         // preprocess on the cell data for a column
         if(o.columns[column].callback && typeof o.columns[column].callback === "function")
-          celldata = o.columns[column].callback( data, o.columns[column] );
+          celldata = o.columns[column].callback.call( $cell, data, o.columns[column] )
 
         $cell
           .data("cell_properties", o.columns[column])
           .addClass(o.columns[column].classname)
-          .html(celldata || "&nbsp;");
+          .append(celldata || "&nbsp;")
 
         if(o.columns[column].css) $cell.css(o.columns[column].css);
 
@@ -507,10 +524,8 @@
                   .data("page", 1)
                   .html("&larr; First")
                   .click(function() {
-                    if (o.currentPage > 1) {
-                      o.currentPage = 1;
-                      that.render();
-                    }
+                    o.currentPage = 1
+                    that.render();
                     return false;
                   })
               )
@@ -520,10 +535,9 @@
                   .data("page", o.currentPage - 1)
                   .text("Prev")
                   .click(function() {
-                    if (o.currentPage > 1) {
-                      o.currentPage -= 1;
-                      that.render();
-                    }
+                    o.currentPage -= 1
+                    o.currentPage = o.currentPage >= 1 ? o.currentPage : 1
+                    that.render();
                     return false;
                   })
               )
@@ -533,10 +547,9 @@
                   .data("page", o.currentPage + 1)
                   .text("Next")
                   .click(function() {
-                    if (o.currentPage < o.pageCount) {
-                      o.currentPage += 1;
-                      that.render();
-                    }
+                    o.currentPage += 1
+                    o.currentPage = o.currentPage <= o.pageCount? o.currentPage : o.pageCount
+                    that.render();
                     return false;
                   })
               )
@@ -546,10 +559,8 @@
                   .data("page", o.pageCount)
                   .html("Last &rarr;")
                   .click(function() {
-                    if (o.currentPage < o.pageCount) {
-                      o.currentPage = o.pageCount;
-                      that.render();
-                    }
+                    o.currentPage = o.pageCount
+                    that.render();
                     return false;
                   })
               );
@@ -583,10 +594,8 @@
                   .data("page", i)
                   .text(i)
                   .click(function() {
-                    if (o.currentPage !== $(this).data('page')) {
-                      o.currentPage = $(this).data('page');
-                      that.render();
-                    }
+                    o.currentPage = $(this).data('page')
+                    that.render();
                     return false;
                   })
               );
@@ -611,6 +620,15 @@
           this.$pagination.append($pager);
         }
         return this.$pagination;
+      }
+
+    , remove: function() {
+        var $e = this.$element
+
+        if(this.$section_header) this.$section_header.remove();
+
+        $e.data("datatable", null);
+        $e.empty();
       }
 
   };
@@ -677,15 +695,47 @@
       this.$column_modalfooter = $("<div></div>")
         .addClass("modal-footer")
         .append(
-          $("<a></a>")
-            .attr("href", "#")
-            .addClass("btn btn-primary")
-            .text("Save")
-            .click(function() {
-              _saveColumns.call(that);
-              return false;
-            })
-        );
+            // show the check 'all / none' columns
+            $('<div class="pull-left"></div>')
+              .append(
+                $('<div class="btn-group"></div>')
+                  .append(
+                      $('<a href="#" class="btn">Check All</a>')
+                        .click(function() {
+                          $(this).closest(".modal").find('a.active > i.icon-remove').each(function(){
+                            $(this).parent().click();
+                          })
+                          return false;
+                        })
+
+                    , $('<a href="#" class="btn">None</a>')
+                        .click(function() {
+                          $(this).closest(".modal").find('a.active > i.icon-ok').each(function(){
+                            $(this).parent().click();
+                          })
+                          return false;
+                        })
+                  )
+              )
+
+          , o.allowSaveColumns ? $("<a></a>")
+              .attr("href", "#")
+              .addClass("btn btn-primary")
+              .text("Save")
+              .click(function() {
+                _saveColumns.call(that)
+                return false;
+              }) : ""
+
+          , $("<a></a>")
+              .attr("href", "#")
+              .addClass("btn")
+              .text("Close")
+              .click(function() {
+                that.$column_modal.modal('hide')
+                return false;
+              })
+        )
 
       // render the modal body
       this.$column_modalbody = $("<div></div>")
@@ -705,6 +755,7 @@
     $toggle
       .addClass("btn")
       .data("toggle", "modal")
+      .attr("title", "Choose which columns you would like to display.")
       .attr("href", "#" + this.$column_modal.attr("id"))
       .html("<i class=\"icon-cog\"></i>")
       .click(function(e) {
@@ -725,17 +776,24 @@
       , $e = this.$element
       , $toggle = $("<a></a>");
 
-    o.filterModal.hide();
-
     // render the display modal button
     $toggle
       .addClass("btn")
       .data("toggle", "modal")
       .attr("href", "#")
+      .attr("title", "Open the filter dialog.")
       .html("<i class=\"icon-filter\"></i>")
       .click(function() {
-        $(o.filterModal)
-          .modal();
+        if($(o.filterModal).hasClass("modal"))
+          $(o.filterModal)
+            .modal();
+        else if($(o.filterModal).is(":visible"))
+          $(o.filterModal)
+            .hide();
+        else
+          $(o.filterModal)
+            .show();
+
         return false;
       });
     this.buttons.unshift($toggle);
@@ -749,6 +807,7 @@
     // per page options and current filter/sorting
     var $perpage_select = $("<a></a>")
       .addClass("btn dropdown-toggle")
+      .attr("title", "Change the number of rows per page.")
       .attr("data-toggle", "dropdown")
       .html(o.perPage + "&nbsp;")
       .css({ fontWeight: 'normal' })
@@ -832,11 +891,17 @@
     $overflow
       .addClass("btn")
       .attr("href", "#")
+      .attr("title", "Toggle the size of the table to fit the data or to fit the screen.")
       .html("<i class=\"icon-resize-full\"></i>")
       .click(function() {
-        _toggleOverflow.call(this, $wrapper);
+        if($wrapper) _toggleOverflow.call(this, $wrapper);
         return false;
       });
+
+    if(!this.resultset || !this.resultset.data || this.resultset.data.length == 0)
+      $overflow
+        .addClass("disabled")
+
     this.buttons.push($overflow);
   }
 
@@ -873,8 +938,7 @@
       o.currentPage--;
       offset = o.currentPage * o.perPage;
     }
-
-    if(o.currentPage === 0) o.currentPage = 1;
+    if(o.currentPage < 1) o.currentPage = 1;
 
     if($(this).popover) $(this).popover('hide');
 
@@ -888,6 +952,8 @@
     var o = this.options
       , $e = this.$element;
 
+    $e.empty();
+
     // initialize the toolbar
     _initToolbar.call(this);
 
@@ -897,7 +963,6 @@
 
     this.loading( false );
 
-    $e.empty();
     if(this.$default) $e.append(this.$default);
   }
 
@@ -992,8 +1057,11 @@
       , columns = data ? JSON.parse(data) : []
       , res = this.resultset;
 
-    for(var column in o.columns) {
-      o.columns[column] = $.extend({}, o.columns[column], (res.columns ? res.columns[column] : []), columns[column]);
+    // if the server doesn't pass the column property back
+    if(!res.columns) res.columns = [];
+
+    for(column in o.columns) {
+      o.columns[column] = $.extend({}, o.columns[column], res.columns[column], columns[column]);
     }
   }
 
@@ -1068,6 +1136,7 @@
     , allowExport: false
     , allowOverflow: true
     , allowMultipleSort: false
+  , allowSaveColumns: false
     , toggleColumns: true
     , url: ''
     , columns: []
