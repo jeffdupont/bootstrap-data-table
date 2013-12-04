@@ -512,13 +512,13 @@
         if(o.perPage >= res.totalRows) return;
 
         if(!this.$pagination) {
-          this.$pagination = $("<div></div>");
+          this.$pagination = $("<div></div>").addClass("pagination pagination-right");
 
           // how many pages?
           o.pageCount = Math.ceil(res.totalRows / o.perPage);
 
           // setup the pager container and the quick page buttons
-          var $pager = $("<ul></ul>").addClass("pagination pagination-right")
+          var $pager = $("<ul></ul>")
             , $first = $("<li></li>").append(
                 $("<a></a>")
                   .attr("href", "#")
