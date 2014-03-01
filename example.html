@@ -1,69 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
 
-<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="js/jquery.min.js"></script>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
-<script src="bootstrap-datatable.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <script src="bootstrap-datatable.js"></script>
 </head>
 
 <body>
 <div id="example" class="container">
-
-<header class="jumbotron subhead" id="overview">
-  <h1>Data Table Example</h1>
-  <p class="lead">Basic example of the new AJAX powered data table.</p>
-</header>
-
-<div class="row">
-  <div class="span12">
-    <div id="table-container_1">
-    </div>
-    <div id="table-container_1-filter" class="modal hide">
-      <div class="modal-header">
-        <button class="close" data-dismiss="modal">x</button>
-        <h3>Filter Options</h3>
-      </div>
-      <div class="modal-body">
-        <form method="post">
-        <fieldset>
-          <legend>Legend text</legend>
-          <div class="control-group">
-            <label class="control-label" for="input01">Text input</label>
-            <div class="controls">
-              <input type="text" class="input-xlarge" id="input01">
-              <p class="help-block">Supporting help text</p>
+    <header class="jumbotron subhead" id="overview">
+        <h1>Data Table Example</h1>
+        <p class="lead">Basic example of the new AJAX powered data table.</p>
+    </header>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="table-container_1">
             </div>
-          </div>
-        </fieldset>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <a href="#" class="btn">Close</a>
-        <a href="#" class="btn btn-primary">Save changes</a>
-      </div>
+            <div id="table-container_1-filter" class="modal hide">
+                <div class="modal-header">
+                    <button class="close" data-dismiss="modal">x</button>
+                    <h3>Filter Options</h3>
+                </div>
+                <div class="modal-body">
+                    <form method="post">
+                        <fieldset>
+                            <legend>Legend text</legend>
+                            <div class="control-group">
+                                <label class="control-label" for="input01">Text input</label>
+
+                                <div class="controls">
+                                    <input type="text" class="input-xlarge" id="input01">
+
+                                    <p class="help-block">Supporting help text</p>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn">Close</a>
+                    <a href="#" class="btn btn-primary">Save changes</a>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-<div class="row">
-  <div class="span12">
-    <div id="table-container_2">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="table-container_2">
+            </div>
+        </div>
     </div>
-  </div>
 </div>
-
-
 <script>
 
 $("#table-container_1").datatable({
     perPage: 5
   , url: 'example-data.php'
   , showPagination: true
-  // , showFilter: true
-  // , filterModal: $("#table-container_1-filter")
+  , showFilter: true
+  , filterModal: $("#myModal")
   , columns: [
         {
             title: "Column 1"
@@ -111,7 +118,7 @@ $("#table-container_2").datatable({
   , buttons: [
       $("<a></a>")
         .addClass("btn")
-        .html('<i class="icon-tag"></i>')
+        .html('<span class="glyphicon glyphicon-tag"></span>')
     ]
   , columns: [
         {
@@ -140,9 +147,6 @@ $("#table-container_2").datatable({
         }
     ]
 });
-
 </script>
-
-</div>
 </body>
 </html>
