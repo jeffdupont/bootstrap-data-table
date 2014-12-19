@@ -1,11 +1,11 @@
 <?php
 
 $total_rows = 200;
-$per_page = $_POST["perPage"] ?: 10;
-$current_page = $_POST["currentPage"] ?: 1;
+$per_page = isset($_POST["perPage"]) ?: 10;
+$current_page = isset($_POST["currentPage"]) ?: 1;
 
-$sort = $_POST["sort"] ?: array(array( "column_0"=>"desc" ), array( "column_2"=>"asc" ));
-$filter = $_POST["filter"] ?: array("column_0" => "foo");
+$sort = isset($_POST["sort"]) ?: array(array( "column_0"=>"desc" ), array( "column_2"=>"asc" ));
+$filter = isset($_POST["filter"]) ?: array("column_0" => "foo");
 
 $example = array(
 
